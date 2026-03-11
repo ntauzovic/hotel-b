@@ -1,0 +1,41 @@
+# Vendor direktorij (PHP zavisnosti)
+vendor/
+node_modules/
+
+# Git fajlovi
+.git/
+.gitignore
+
+# Log fajlovi
+*.log
+storage/logs/
+
+# Cache
+bootstrap/cache/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# Env fajlovi (sigurnost!)
+.env
+.env.*
+!.env.example
+
+# OS fajlovi
+.DS_Store
+Thumbs.db
+
+# Test fajlovi
+tests/
+phpunit.xml
+
+# IDE fajlovi
+.idea/
+.vscode/
+
+# Docker fajlovi (ne treba u image)
+docker/
+docker-compose*.yml
+
+# npm
+package-lock.json

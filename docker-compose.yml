@@ -1,0 +1,128 @@
+version: '3.8'
+
+# ============================================================
+# SERVICES - svaki servis je jedan "kontejner" (mini racunar)
+# ============================================================
+services:
+
+  # ----------------------------------------------------------
+  # APP - Laravel PHP aplikacija
+  # ----------------------------------------------------------
+  app:
+    build:
+      context: .                          # gdje se nalazi Dockerfile
+      dockerfile: docker/php/Dockerfile   # koji Dockerfile koristiti
+    container_name: hotel_app             # ime kontejnera
+    restart: unless-stopped               # restartuj ako padne, osim ako ga ti rucno zaustavis
+    working_dir: /var/www                 # radni direktorij unutar kontejnera
+    volumes:
+      - ./:/var/www                       # mapira tvoj lokalni folder u kontejner (live reload koda)
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini  # PHP konfiguracija
+    networks:
+      - hotel_network                     # isti network kao ostali servisi
+    depends_on:
+      - postgres                          # cekaj da postgres bude spreman
+      - redis                             # cekaj da redis bude spreman
+
+  # ----------------------------------------------------------
+  # NGINX - web server koji prima HTTP zahtjeve i salje ih PHP-u
+  # ----------------------------------------------------------
+  nginx:
+    image: nginx:alpine                   # oficijalni nginx image (alpine = lagana verzija)
+    container_name: hotel_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"                           # port 80 na tvojem racunaru → port 80 u kontejneru (HTTP)
+      - "443:443"                         # port 443 za HTTPS
+    volumes:
+      - ./:/var/www                       # pristup Laravel fajlovima
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d   # nginx konfiguracija
+      - ./docker/nginx/ssl:/etc/nginx/ssl         # SSL certifikati za HTTPS
+    networks:
+      - hotel_network
+    depends_on:
+      - app
+
+  # ----------------------------------------------------------
+  # POSTGRES - baza podataka
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine             # PostgreSQL 16, alpine = lagana verzija
+    container_name: hotel_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"                       # port za pristup bazi (mozes se spojiti iz DataGrip-a)
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}         # ime baze - cita iz .env fajla
+      POSTGRES_USER: ${DB_USERNAME}       # korisnik baze - cita iz .env fajla
+      POSTGRES_PASSWORD: ${DB_PASSWORD}   # lozinka baze - cita iz .env fajla
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # cuva podatke i nakon restarta kontejnera
+    networks:
+      - hotel_network
+
+  # ----------------------------------------------------------
+  # REDIS - brzi cache i queue (red cekanja za pozadinske jobove)
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine                 # Redis 7, alpine verzija
+    container_name: hotel_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"                       # port za Redis
+    volumes:
+      - redis_data:/data                  # cuva Redis podatke i nakon restarta
+    networks:
+      - hotel_network
+
+  # ----------------------------------------------------------
+  # QUEUE WORKER - obradjuje pozadinske taskove (emailovi, notifikacije...)
+  # ----------------------------------------------------------
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: hotel_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work --sleep=3 --tries=3 --timeout=90  # pokrece queue worker
+    volumes:
+      - ./:/var/www
+    networks:
+      - hotel_network
+    depends_on:
+      - postgres
+      - redis
+
+  # ----------------------------------------------------------
+  # SCHEDULER - pokrece Laravel cron jobove svakih 60 sekundi
+  # ----------------------------------------------------------
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: hotel_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    command: sh -c "while true; do php artisan schedule:run; sleep 60; done"  # pokrece scheduler svaki minut
+    volumes:
+      - ./:/var/www
+    networks:
+      - hotel_network
+    depends_on:
+      - postgres
+      - redis
+
+# ============================================================
+# VOLUMES - trajno cuvanje podataka van kontejnera
+# ============================================================
+volumes:
+  postgres_data:    # PostgreSQL podaci - ne brisu se kad restartaes kontejner
+  redis_data:       # Redis podaci
+
+# ============================================================
+# NETWORKS - interna mreza izmedju kontejnera
+# ============================================================
+networks:
+  hotel_network:
+    driver: bridge  # bridge = standardna Docker mreza, kontejneri mogu medjusobno da komuniciraju
