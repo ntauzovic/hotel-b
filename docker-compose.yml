@@ -51,7 +51,7 @@ services:
     container_name: hotel_postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"                       # port za pristup bazi (mozes se spojiti iz DataGrip-a)
+      - "5433:5432"                       # 5433 na tvom racunaru → 5432 u kontejneru (izbjegavamo konflikt)
     environment:
       POSTGRES_DB: ${DB_DATABASE}         # ime baze - cita iz .env fajla
       POSTGRES_USER: ${DB_USERNAME}       # korisnik baze - cita iz .env fajla

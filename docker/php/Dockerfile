@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Instaliraj sistemske zavisnosti
 RUN apt-get update && apt-get install -y \
@@ -41,12 +41,17 @@ WORKDIR /var/www
 # Kopiraj fajlove aplikacije
 COPY . .
 
+# Napravi direktorije i postavi dozvole PRIJE composer install
+RUN mkdir -p /var/www/bootstrap/cache \
+    && mkdir -p /var/www/storage/logs \
+    && mkdir -p /var/www/storage/framework/cache \
+    && mkdir -p /var/www/storage/framework/sessions \
+    && mkdir -p /var/www/storage/framework/views \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 # Instaliraj PHP zavisnosti
 RUN composer install --optimize-autoloader --no-dev
-
-# Postavi dozvole za storage i bootstrap/cache
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Expose PHP-FPM port
 EXPOSE 9000
