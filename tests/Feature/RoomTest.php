@@ -279,4 +279,78 @@ class RoomTest extends TestCase
         $data = $response->json('data');
         $this->assertCount(0, $data);
     }
+
+    // -----------------------------------------------
+    // Images & new types
+    // -----------------------------------------------
+
+    /** @test */
+    public function room_response_includes_images_field(): void
+    {
+        $room = $this->createRoom([
+            'images' => [
+                'https://images.unsplash.com/photo-1?w=800',
+                'https://images.unsplash.com/photo-2?w=800',
+                'https://images.unsplash.com/photo-3?w=800',
+            ],
+        ]);
+
+        $response = $this->getJson("/api/rooms/{$room->id}");
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure(['data' => ['images']]);
+        $this->assertIsArray($response->json('data.images'));
+        $this->assertCount(3, $response->json('data.images'));
+    }
+
+    /** @test */
+    public function can_create_room_with_images(): void
+    {
+        $response = $this->postJson('/api/rooms', [
+            'name'            => '801',
+            'type'            => 'penthouse',
+            'price_per_night' => 500.00,
+            'capacity'        => 4,
+            'images'          => [
+                'https://images.unsplash.com/photo-1?w=800',
+                'https://images.unsplash.com/photo-2?w=800',
+                'https://images.unsplash.com/photo-3?w=800',
+            ],
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('rooms', ['name' => '801', 'type' => 'penthouse']);
+        $this->assertIsArray($response->json('data.images'));
+        $this->assertCount(3, $response->json('data.images'));
+    }
+
+    /** @test */
+    public function can_filter_rooms_by_floor(): void
+    {
+        $this->createRoom(['name' => '701', 'floor' => 7, 'type' => 'penthouse']);
+        $this->createRoom(['name' => '301', 'floor' => 3]);
+
+        $response = $this->getJson('/api/rooms?floor=7');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals(7, $data[0]['floor']);
+    }
+
+    /** @test */
+    public function can_create_room_with_new_types(): void
+    {
+        $types = ['standard', 'superior', 'deluxe', 'junior_suite', 'penthouse'];
+
+        foreach ($types as $index => $type) {
+            $response = $this->postJson('/api/rooms', [
+                'name'            => 'Room-' . $index,
+                'type'            => $type,
+                'price_per_night' => 100.00,
+                'capacity'        => 2,
+            ]);
+            $response->assertStatus(201, "Failed for type: {$type}");
+        }
+    }
 }
