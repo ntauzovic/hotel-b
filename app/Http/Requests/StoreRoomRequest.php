@@ -17,7 +17,7 @@ class StoreRoomRequest extends FormRequest
     {
         return [
             'name'            => 'required|string|max:255|unique:rooms,name',
-            'type'            => 'required|in:single,double,suite,apartment',
+            'type'            => 'required|in:single,double,suite,apartment,standard,superior,deluxe,junior_suite,penthouse',
             'description'     => 'nullable|string',
             'price_per_night' => 'required|numeric|min:0',
             'capacity'        => 'required|integer|min:1|max:20',
@@ -25,6 +25,8 @@ class StoreRoomRequest extends FormRequest
             'is_available'    => 'boolean',
             'amenities'       => 'nullable|array',
             'amenities.*'     => 'string',
+            'images'          => 'nullable|array|max:3',
+            'images.*'        => 'nullable|url',
         ];
     }
 
@@ -35,7 +37,7 @@ class StoreRoomRequest extends FormRequest
             'name.required'            => 'Room name is required.',
             'name.unique'              => 'A room with this name already exists.',
             'type.required'            => 'Room type is required.',
-            'type.in'                  => 'Room type must be: single, double, suite or apartment.',
+            'type.in'                  => 'Room type must be: single, double, suite, apartment, standard, superior, deluxe, junior_suite or penthouse.',
             'price_per_night.required' => 'Price per night is required.',
             'price_per_night.min'      => 'Price cannot be negative.',
             'capacity.required'        => 'Capacity is required.',

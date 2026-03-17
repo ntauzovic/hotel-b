@@ -26,6 +26,11 @@ class RoomService
             $query->where('capacity', '>=', (int) $filters['guests']);
         }
 
+        // Filter po spratu: ?floor=7
+        if (!empty($filters['floor'])) {
+            $query->where('floor', (int) $filters['floor']);
+        }
+
         // Filter po max cijeni: ?max_price=150
         if (!empty($filters['max_price'])) {
             $query->where('price_per_night', '<=', $filters['max_price']);

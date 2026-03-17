@@ -20,6 +20,7 @@ class Room extends Model
         'floor',
         'is_available',
         'amenities',
+        'images',
     ];
 
     // Automatsko kastovanje tipova
@@ -27,5 +28,6 @@ class Room extends Model
         'price_per_night' => 'decimal:2',
         'is_available'    => 'boolean',
         'amenities'       => 'array',
+        'images'          => 'array',
     ];
 }

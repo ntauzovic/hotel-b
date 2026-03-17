@@ -17,7 +17,7 @@ class UpdateRoomRequest extends FormRequest
         // Ovo omogucava PATCH (parcijalni update)
         return [
             'name'            => 'sometimes|required|string|max:255|unique:rooms,name,' . $this->room->id,
-            'type'            => 'sometimes|required|in:single,double,suite,apartment',
+            'type'            => 'sometimes|required|in:single,double,suite,apartment,standard,superior,deluxe,junior_suite,penthouse',
             'description'     => 'nullable|string',
             'price_per_night' => 'sometimes|required|numeric|min:0',
             'capacity'        => 'sometimes|required|integer|min:1|max:20',
@@ -25,6 +25,8 @@ class UpdateRoomRequest extends FormRequest
             'is_available'    => 'boolean',
             'amenities'       => 'nullable|array',
             'amenities.*'     => 'string',
+            'images'          => 'nullable|array|max:3',
+            'images.*'        => 'nullable|url',
         ];
     }
 }
