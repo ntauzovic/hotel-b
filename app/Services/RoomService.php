@@ -11,32 +11,45 @@ class RoomService
     {
         $query = Room::query();
 
-        // Filter po dostupnosti: ?available=true
-        if (isset($filters['available'])) {
-            $query->where('is_available', filter_var($filters['available'], FILTER_VALIDATE_BOOLEAN));
-        }
-
-        // Filter po tipu: ?type=suite
-        if (!empty($filters['type'])) {
-            $query->where('type', $filters['type']);
-        }
-
-        // Filter po kapacitetu: ?guests=2
-        if (!empty($filters['guests'])) {
-            $query->where('capacity', '>=', (int) $filters['guests']);
-        }
-
-        // Filter po spratu: ?floor=7
+        // Višestruki spratovi: ?floor=1,2,3
         if (!empty($filters['floor'])) {
-            $query->where('floor', (int) $filters['floor']);
+            $floors = array_map('intval', explode(',', $filters['floor']));
+            $query->whereIn('floor', $floors);
         }
 
-        // Filter po max cijeni: ?max_price=150
-        if (!empty($filters['max_price'])) {
-            $query->where('price_per_night', '<=', $filters['max_price']);
+        // Višestruki tipovi: ?type=single,double,suite
+        if (!empty($filters['type'])) {
+            $types = explode(',', $filters['type']);
+            $query->whereIn('type', $types);
         }
 
-        return $query->orderBy('name')->paginate(15);
+        // Status: ?status=available,occupied,maintenance
+        if (!empty($filters['status'])) {
+            $statuses = explode(',', $filters['status']);
+            $hasAvailable  = in_array('available', $statuses);
+            $hasUnavailable = in_array('occupied', $statuses) || in_array('maintenance', $statuses);
+
+            if ($hasAvailable && !$hasUnavailable) {
+                $query->where('is_available', true);
+            } elseif (!$hasAvailable && $hasUnavailable) {
+                $query->where('is_available', false);
+            }
+            // ako su oba selektovana — nema filtera
+        }
+
+        // Min cijena: ?min=100
+        if (!empty($filters['min'])) {
+            $query->where('price_per_night', '>=', (float) $filters['min']);
+        }
+
+        // Max cijena: ?max=500
+        if (!empty($filters['max'])) {
+            $query->where('price_per_night', '<=', (float) $filters['max']);
+        }
+
+        $perPage = isset($filters['per_page']) ? min((int) $filters['per_page'], 50) : 12;
+
+        return $query->orderBy('floor')->orderBy('name')->paginate($perPage);
     }
 
     // Dohvati jednu sobu

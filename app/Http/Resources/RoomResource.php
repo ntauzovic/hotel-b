@@ -20,6 +20,7 @@ class RoomResource extends JsonResource
             'capacity'        => $this->capacity,
             'floor'           => $this->floor,
             'is_available'    => $this->is_available,
+            'status'          => $this->is_available ? 'available' : 'occupied',
             'amenities'       => $this->amenities ?? [],
             'images'          => $this->images ?? [],
             'created_at'      => $this->created_at?->toDateTimeString(),
