@@ -13,8 +13,9 @@ return new class extends Migration
             $table->json('images')->nullable()->after('amenities'); // Slike sobe (array URL-ova)
         });
 
-        // Update the type enum to include new types
-        DB::statement("ALTER TABLE rooms MODIFY COLUMN type ENUM('standard', 'superior', 'deluxe', 'junior_suite', 'penthouse', 'single', 'double', 'suite', 'apartment')");
+        // Ukloni stari check constraint i dozvoli nove tipove (PostgreSQL)
+        DB::statement("ALTER TABLE rooms DROP CONSTRAINT IF EXISTS rooms_type_check");
+        DB::statement("ALTER TABLE rooms ALTER COLUMN type TYPE VARCHAR(50)");
     }
 
     public function down(): void
