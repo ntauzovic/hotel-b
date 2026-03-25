@@ -11,32 +11,34 @@ class RoomSeeder extends Seeder
     {
         Room::truncate();
 
-        // Standard/Superior/Deluxe images (floors 1-5, can repeat across rooms)
+        // Standard/Superior/Deluxe images — beach/Mediterranean hotel style (floors 1-5)
+        // All IDs verified working as of March 2026.
         $stdImages = [
-            'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800',
-            'https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800',
-            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800',
-            'https://images.unsplash.com/photo-1631049552057-403cdb8f0658?w=800',
-            'https://images.unsplash.com/photo-1595576508898-0ad5c879a061?w=800',
-            'https://images.unsplash.com/photo-1587985064135-0366536eab42?w=800',
-            'https://images.unsplash.com/photo-1571508601891-ca5e7a713859?w=800',
-            'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800',
-            'https://images.unsplash.com/photo-1549294413-26f195200c16?w=800',
-            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
+            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80&auto=format&fit=crop', // tropical resort pool, mountain backdrop
+            'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80&auto=format&fit=crop', // beach pool deck with sun loungers
+            'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800&q=80&auto=format&fit=crop', // luxury resort pool at dusk, palm trees
+            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80&auto=format&fit=crop', // bright luxury hotel room interior
+            'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800&q=80&auto=format&fit=crop', // elegant classic hotel bedroom
+            'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80&auto=format&fit=crop', // beach terrace dining with sea view
+            'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800&q=80&auto=format&fit=crop', // resort pool at twilight
+            'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80&auto=format&fit=crop', // luxury white villa with blue pool
+            'https://images.unsplash.com/photo-1615460549969-36fa19521a4f?w=800&q=80&auto=format&fit=crop', // resort pool with loungers and greenery
+            'https://images.unsplash.com/photo-1590490359683-658d3d23f972?w=800&q=80&auto=format&fit=crop', // resort pool panoramic view
         ];
 
-        // Luxury images (floors 6-7, unique per room set of 3)
+        // Luxury images — beach resort suites and ocean-view rooms (floors 6-7)
+        // All IDs verified working as of March 2026.
         $luxImages = [
-            'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
-            'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-            'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800',
-            'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800',
-            'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800',
-            'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
-            'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800',
-            'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-            'https://images.unsplash.com/photo-1629140727571-9b5c6f6267b4?w=800',
-            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800',
+            'https://images.unsplash.com/photo-1469796466635-455ede028aca?w=800&q=80&auto=format&fit=crop', // Santorini/Mediterranean terrace, sea view
+            'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800&q=80&auto=format&fit=crop', // Mediterranean beach villa with pool
+            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80&auto=format&fit=crop', // luxury resort pool lit at night
+            'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800&q=80&auto=format&fit=crop', // luxury hotel room, warm lighting
+            'https://images.unsplash.com/photo-1631049552057-403cdb8f0658?w=800&q=80&auto=format&fit=crop', // clean modern resort bedroom
+            'https://images.unsplash.com/photo-1543968996-ee822b8176ba?w=800&q=80&auto=format&fit=crop', // beach-view room, turquoise ocean panorama
+            'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80&auto=format&fit=crop', // sunset resort pool exterior, pink sky
+            'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80&auto=format&fit=crop', // modern white villa with infinity pool
+            'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80&auto=format&fit=crop', // boutique luxury hotel room interior
+            'https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=800&q=80&auto=format&fit=crop', // penthouse suite, floor-to-ceiling windows
         ];
 
         $rooms = [
